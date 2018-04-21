@@ -3,7 +3,7 @@
 using namespace sf;
 
 int main() {
-	RenderWindow window(VideoMode(453,453), "Fantasy-Fighter!");
+	RenderWindow window(VideoMode(821,661), "Fantasy-Fighter!");
 
 	Texture grid;
 	grid.loadFromFile("images/grid.png");
@@ -20,8 +20,11 @@ int main() {
 
 		//Create the screen
 		window.clear();
-		window.draw();
+		window.draw(sBoard);
 		window.display();
 
 	}
+
+	return 0;
+
 }
