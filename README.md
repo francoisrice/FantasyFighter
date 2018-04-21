@@ -26,16 +26,28 @@ The game hasn't yet been tested when not compiled from source.
  - Add obstacles
 
 # Combat Mechanics
-Three levels of space: Normal, Croutch, and Jump
-You can light or Heavy attack normal, low, or high
-High attacks hit high and normal, while low attacks hit low and normal
-High attacks are the default attack height
+Two levels of space: Air and Ground
+You can ground light, air light, ground heavy, air heavy, ground smash, or air smash
+air attacks hit jumping targets
+Ground attacks are the default
 Blocks block all heights of attack; but do not affect heavy attacks
-Speed of actions: Light - 1 turn, Heavy - 2 turns, Jump takes 1 turn and lasts 2 turns, 
-	croutch takes 1 turn and negates motion, Block - 1 turn and negates motion
-With any action, except block and croutch, you can also move to another square
-Heavy attack direction can be changed until it is unleased
+Speed of actions: 
+- Light - hits instantly, 40% damage
+- Heavy - 1 turn to charge, then hits on following turn, 100% damage
+- Smash - 2 turns to charge, then hits on following turn, negates motion, 200% damage
+- Jump - in the air that turn, and enemy's turn
+- Block - Starts that turn and continues for the next turn, negates motion
 
+Blocking a light attack or heavy attack cancels the attack
+Heavy attacks that are blocked cause the next turn to be spent stunned
+Smash attacks ignore blocking
+
+Each turn the player or enemy can choose to jump, move, and attack
+These actions can happen in any order, therefore one could move to an 
+enemy, light action, and jump one turn, and the next turn light attack, and
+move away the next turn 
+
+Each character can move two squares per turn unless there is a special condition.
 
 # Mechanics
 
