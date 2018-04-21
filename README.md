@@ -25,6 +25,18 @@ The game hasn't yet been tested when not compiled from source.
 7. ...
  - Add obstacles
 
+# Combat Mechanics
+Three levels of space: Normal, Croutch, and Jump
+You can light or Heavy attack normal, low, or high
+High attacks hit high and normal, while low attacks hit low and normal
+High attacks are the default attack height
+Blocks block all heights of attack; but do not affect heavy attacks
+Speed of actions: Light - 1 turn, Heavy - 2 turns, Jump takes 1 turn and lasts 2 turns, 
+	croutch takes 1 turn and negates motion, Block - 1 turn and negates motion
+With any action, except block and croutch, you can also move to another square
+Heavy attack direction can be changed until it is unleased
+
+
 # Mechanics
 
 -
