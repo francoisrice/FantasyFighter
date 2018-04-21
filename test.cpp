@@ -5,7 +5,10 @@
 using namespace sf;
 
 int size = 75;
+
 //int party_size = ; //start with 1 for now
+
+CircleShape f[2]; //figures for character and enemy
 
 int board[10][10] = // generic 10x10 zone with 1 as obstacles
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -19,11 +22,29 @@ int board[10][10] = // generic 10x10 zone with 1 as obstacles
 	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-CircleShape f[2]; //figures for character and enemy
+void countMap(int board[][]) {
+	int obstacle_num=0;
+	int enemy_count=0;
+	int party_size=0;
+	for(int i=0;i<10;i++)
+		for(int j=0;j<10;j++) {
+			int n = board[i][j];
+			obstacle_num += n==1?1:0;
+			enemy_count += n<0?1:0;
+			party_size += n>=2?1:0;
+		}
+	return party_size,obstacle_num,enemy_count 
+}
 
-CircleShape createCharacterIcon() {
+
+
+RectangleShape obstacles[obstacle_num];
+
+
+CircleShape createCharacterIcon(int red,int green,int blue) {
 	CircleShape shape(36);
 	shape.setFillColor(Color(0,100,255));
+	//shape.setFillColor(Color(red,green,blue)); // when creating shapes from character profiles
 	return shape;
 }
 
@@ -32,6 +53,52 @@ RectangleShape createObstacle() {
 	rectangle.setFillColor(Color(0,0,0));
 	return rectangle;
 }
+
+void startingPosition() {
+	int k=0;
+  	for(int i=0;i<10;i++)
+	    for(int j=0;j<10;j++) {
+		int n = board[i][j];
+		if (!n) continue;
+		if (n>=2) {
+			//place character
+			f[k].setRadius(36);
+			f[k].setFillColor(Color(0,170,200));
+			f[k].setPosition(size*j+2,size*i+2);
+			k++;
+		}
+		if (n==1) {
+			//generate obstacle
+			RectangleShape block = createObstacle();
+			block.setPosition(size*j+2,size*i+2);
+		}
+		if (n<0) {
+			//place enemy
+			f[k].setRadius(36);
+			f[k].setFillColor(Color(229,142,29));	
+			f[k].setPosition(size*j+2,size*i+2);
+			k++;
+		}
+	}
+}
+
+// void loadPosition() { 
+// //Use this to load obstacles and players
+//   int k=0;
+//   for(int i=0;i<10;i++)
+//     for(int j=0;j<10;j++) {
+// 	int n = board[i][j];
+// 	if (!n) continue;
+// 	int x = abs(n)-1;
+// 	int y = n>0?1:0;
+// 	f[k].setTextureRect( IntRect(size*x,size*y,size,size) );
+// 	f[k].setPosition(size*j,size*i);
+// 	k++;
+// 	}
+
+// 	for(int i=0;i<position.length();i+=5)
+// 	  move(position.substr(i,4));
+// }
 
 void loadCharacterIcon() {
 	//return 0;
@@ -62,40 +129,21 @@ void move(std::string str) {
 	//if (f[i].getPosition()==oldPos) f[i].setPosition(newPos);
 }
 
-// std::string position="";
-
-// void loadPosition() {
-//   int k=0;
-//   for(int i=0;i<10;i++)
-//     for(int j=0;j<10;j++) {
-// 	int n = board[i][j];
-// 	if (!n) continue;
-// 	int x = abs(n)-1;
-// 	int y = n>0?1:0;
-// 	f[k].setTextureRect( IntRect(size*x,size*y,size,size) );
-// 	f[k].setPosition(size*j,size*i);
-// 	k++;
-// 	}
-
-// 	for(int i=0;i<position.length();i+=5)
-// 	  move(position.substr(i,4));
-// }
-
 int main() {
 	RenderWindow window(VideoMode(751,751), "Fantasy Fighter!");
 
 	Texture grid; //import character+color?
 	grid.loadFromFile("images/grid3.png");
 
-	CircleShape f[2];
+	//CircleShape f[0](36);
+	//f[0].setFillColor(Color(0,170,200));
 
-	CircleShape s(36);
-	s.setFillColor(Color(0,170,200));
-
-	CircleShape s2(36);
-	s2.setFillColor(Color(229,142,29));	
+	//CircleShape f[1](36);
+	//f[1].setFillColor(Color(229,142,29));	
 
 	//loadPosition //place Correct circles and obstacle squares
+
+	startingPosition();
 
 	bool isMove=false;
 	float dx=0, dy=0;
@@ -116,28 +164,29 @@ int main() {
 
 			if (e.type == Event::MouseButtonPressed)
 				if (e.key.code == Mouse::Left)
-					if (s.getGlobalBounds().contains(pos.x,pos.y)){
-						isMove = true; 
-						dx=pos.x -s.getPosition().x;
-						dy=pos.y -s.getPosition().y;
+					for(int i=0;i<2;i++)
+					if (f[i].getGlobalBounds().contains(pos.x,pos.y)){
+						isMove = true; n=i;
+						dx=pos.x -f[i].getPosition().x;
+						dy=pos.y -f[i].getPosition().y;
 					}
 			if (e.type == Event::MouseButtonReleased)
 				if (e.key.code == Mouse::Left){
 					isMove=false;
-					Vector2f p = s.getPosition() + Vector2f(37,37); //Vector2f(size/2,size/2);
+					Vector2f p = f[n].getPosition() + Vector2f(37,37); //Vector2f(size/2,size/2);
 					Vector2f newPos = Vector2f(75*int(p.x/75)+2, 75*int(p.y/75)+2);
-					s.setPosition(newPos);
-					std::cout<<int(s.getPosition().x)<<" "<<int(s.getPosition().y)<<std::endl;
+					f[n].setPosition(newPos);
 				}
 		}
 
-		if (isMove) s.setPosition(pos.x-dx,pos.y-dy);
+		if (isMove) f[n].setPosition(pos.x-dx,pos.y-dy);
 
 		//Create the screen
 		window.clear();
 		window.draw(sBoard);
-		window.draw(s);
-		window.draw(s2);
+		for(int i=0;i<32;i++) window.draw(f[i]);
+		//window.draw(f[0]);
+		//window.draw(f[1]);
 		window.display();
 
 	}
