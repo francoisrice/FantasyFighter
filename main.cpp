@@ -39,18 +39,18 @@ void Map::choose_map (int mapNum) {
 int board1[10][10] = // initial zones will be 16 by 16 boards, randomly generated
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	  0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
+	  0, 0,-1, 0, 1, 0, 0, 0, 0, 0,
 	  0, 0, 0, 0, 1, 1, 0, 0, 0, 0,
 	  0, 0, 0, 0, 1, 1, 1, 0, 0, 0,
 	  0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	  0,-1, 0, 0, 0, 0, 0, 0, 0, 0,
+	  0, 0, 0, 0, 0, 0, 0, 0, 6, 4,
+	  0, 0, 0, 0, 0, 0, 0, 0, 2, 3,
+	  0, 0, 0, 0, 0, 0, 0, 0, 7, 5,
+	  0,-1, 0, 0, 0, 0, 0, 0, 0, 0,
 	  0, 0, 0, 0, 1, 1, 1, 0, 0, 0,
 	  0, 0, 0, 0, 1, 1, 0, 0, 0, 0,
-	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	  0, 0,-1, 0, 0, 0, 0, 0, 0, 0,
 	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -98,19 +98,19 @@ void move(std::string str) {
 	Vector2f oldPos = toCoord(str[0],str[1]);
 	Vector2f newPos = toCoord(str[2],str[3]);
 
-	for(int i=0;i<32;i++)
-	if ( f[i].getPosition()==newPos) f[i].setPosition(-100,-100);
+	//for(int i=0;i<32;i++)
+	//if ( f[i].getPosition()==newPos) f[i].setPosition(-100,-100);
 	
-	for(int i=0;i<32;i++)
-	if (f[i].getPosition()==oldPos) f[i].setPosition(newPos);
+	//for(int i=0;i<32;i++)
+	//if (f[i].getPosition()==oldPos) f[i].setPosition(newPos);
 }
 
 std::string position="";
 
-void loadPosition() {
+void loadPosition() { //Use this to load obstacles and players
   int k=0;
-  for(int i=0;i<8;i++)
-    for(int j=0;j<8;j++) {
+  for(int i=0;i<10;i++)
+    for(int j=0;j<10;j++) {
 	int n = board[i][j];
 	if (!n) continue;
 	int x = abs(n)-1;
@@ -125,7 +125,7 @@ void loadPosition() {
 }
 
 int main() {
-RenderWindow window(VideoMode(453, 453), "Simplescape");
+RenderWindow window(VideoMode(821, 661), "Fantasy Fighter");
 
 // Generate grid semi-randomly (random 8 exterior, 8 dungeon) 0.1.XX
 //Texture t1;
