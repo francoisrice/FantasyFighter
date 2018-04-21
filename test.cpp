@@ -1,11 +1,11 @@
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp> // All major graphics functions
 #include <time.h>
+#include <stdlib.h> //rand()
+#include <iostream> //cout (for debugging)
 using namespace sf;
 
-int size = 56;
+int size = 75;
 //int party_size = ; //start with 1 for now
-
-Sprite f[32]; //figures; this may be unnecessary
 
 int board[10][10] = // generic 10x10 zone with 1 as obstacles
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -19,14 +19,16 @@ int board[10][10] = // generic 10x10 zone with 1 as obstacles
 	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+CircleShape f[2]; //figures for character and enemy
+
 CircleShape createCharacterIcon() {
-	CircleShape shape(60.f);
+	CircleShape shape(36);
 	shape.setFillColor(Color(0,100,255));
 	return shape;
 }
 
 RectangleShape createObstacle() {
-	RectangleShape rectangle(Vector2f(82,66));
+	RectangleShape rectangle(Vector2f(75,75));
 	rectangle.setFillColor(Color(0,0,0));
 	return rectangle;
 }
@@ -85,8 +87,13 @@ int main() {
 	Texture grid; //import character+color?
 	grid.loadFromFile("images/grid3.png");
 
+	CircleShape f[2];
+
 	CircleShape s(36);
 	s.setFillColor(Color(0,170,200));
+
+	CircleShape s2(36);
+	s2.setFillColor(Color(229,142,29));	
 
 	//loadPosition //place Correct circles and obstacle squares
 
@@ -110,13 +117,18 @@ int main() {
 			if (e.type == Event::MouseButtonPressed)
 				if (e.key.code == Mouse::Left)
 					if (s.getGlobalBounds().contains(pos.x,pos.y)){
-						isMove = true;
+						isMove = true; 
 						dx=pos.x -s.getPosition().x;
 						dy=pos.y -s.getPosition().y;
 					}
 			if (e.type == Event::MouseButtonReleased)
-				if (e.key.code == Mouse::Left)
+				if (e.key.code == Mouse::Left){
 					isMove=false;
+					Vector2f p = s.getPosition() + Vector2f(37,37); //Vector2f(size/2,size/2);
+					Vector2f newPos = Vector2f(75*int(p.x/75)+2, 75*int(p.y/75)+2);
+					s.setPosition(newPos);
+					std::cout<<int(s.getPosition().x)<<" "<<int(s.getPosition().y)<<std::endl;
+				}
 		}
 
 		if (isMove) s.setPosition(pos.x-dx,pos.y-dy);
@@ -125,6 +137,7 @@ int main() {
 		window.clear();
 		window.draw(sBoard);
 		window.draw(s);
+		window.draw(s2);
 		window.display();
 
 	}
