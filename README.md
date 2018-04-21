@@ -1,4 +1,4 @@
-#Fantasy Fighter
+# Fantasy Fighter
 
 A top-down, turn-based, role-playing, fighting game created for Ludem Dare 41!
 
@@ -14,7 +14,17 @@ $ g++ main.cpp -o application -lsfml-graphics -lsfml-window -lsfml-system -lsfml
 Then running the application script will start the game.
 The game hasn't yet been tested when not compiled from source.
 
-#Mechanics
+# TODO
+1. Lock character motion to the center of each square
+2. Have turns for character and enemy
+3. Add logic to enemy
+4. Add Combat actions to Character and Enemy
+5. Tie Character and enemy to profiles for increasing experience and health
+6. Add screen/portal to gain additional powers
+7. ...
+ - Add obstacles
+
+# Mechanics
 
 -
 -
