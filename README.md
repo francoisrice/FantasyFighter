@@ -18,8 +18,9 @@ The game hasn't yet been tested when not compiled from source.
 1. Lock character motion to the center of each square [completed]
 	- Give ability to move both character and enemy [completed]
 	- Generate obstacles [completed]
-2. Have turns for character and enemy
-3. Add logic to enemy
+	- Add collision for obstacles 
+2. Have turns for character and enemy [completed]
+3. Add logic to enemy 
 4. Add Combat actions to Character and Enemy
 5. Tie Character and enemy to profiles for increasing experience and health
 6. Add screen/portal to gain additional powers

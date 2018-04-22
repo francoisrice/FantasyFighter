@@ -115,14 +115,14 @@ void loadCharacterIcon() {
 	//return 0;
 }
 
-int vect2Coord(Vector2f p, Vector2f q) {
-	int s[4];
-	s[0] = p.x-2/size;
-	s[1] = p.y-2/size;
-	s[2] = q.x-2/size;
-	s[3] = q.y-2/size;
-	return s;
-}
+// int vect2Coord(Vector2f p, Vector2f q) {
+// 	//int s[4];
+// 	s[0] = p.x-2/size;
+// 	s[1] = p.y-2/size;
+// 	s[2] = q.x-2/size;
+// 	s[3] = q.y-2/size;
+// 	return s;
+// }
 
 std::string position="";
 
@@ -144,7 +144,7 @@ void move(int arr[4]) {
 }
 
 int main() {
-	RenderWindow window(VideoMode(751,751), "Fantasy Fighter!");
+	RenderWindow window(VideoMode(751,751), "Fantasy Fighter");
 
 
 
@@ -225,26 +225,28 @@ int main() {
 
 			// Perform enemy actions (and ally actions)
 			if (Keyboard::isKeyPressed(Keyboard::Space)){
-				s = "1214";
-				s[0] = oldPos.x-2/size; // This is the only problem...
-				s[1] = oldPos.y-2/size; //   any one move takes an entire array[4]
-				s[2] = newPos.x-2/size;
-				s[3] = newPos.y-2/size;
-				oldPos = Vector2f(size*str[0]+2, size*str[1]+2);
-				newPos = Vector2f(size*str[2]+2, size*str[3]+2);
+				s[0] = 1; // This is the only problem...
+				s[1] = 2; //   any one move takes an entire array[4]
+				s[2] = 1;
+				s[3] = 4;
+				oldPos = Vector2f(size*s[0]+2, size*s[1]+2);
+				newPos = Vector2f(size*s[2]+2, size*s[3]+2);
 
-				for(int i=0;i<2;i++) if (f[0].getPosition()==oldPos) n=i;
+				for(int i=0;i<2;i++) if (f[i].getPosition()==oldPos) n=i;
 
 				// animation
-				for(int k=0;k<25;k++){
+				for(int k=0;k<1000;k++){
 					Vector2f p = newPos - oldPos;
-					f[n].move(p.x/25, p.y/25);
+					f[n].move(p.x/1000, p.y/1000);
 					window.draw(sBoard);
 					for(int i=0;i<2;i++) window.draw(f[i]); 
 					window.draw(f[n]);
 					for(int i=0;i<7;i++) window.draw(obstacles[i]);
 					window.display();
 				}
+
+				move(s); 
+				f[n].setPosition(newPos);
 			}
 
 			if (isMove) f[1].setPosition(pos.x-dx,pos.y-dy);
