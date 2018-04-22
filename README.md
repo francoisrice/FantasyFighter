@@ -16,7 +16,8 @@ The game hasn't yet been tested when not compiled from source.
 
 # TODO
 1. Lock character motion to the center of each square [completed]
-	- Give ability to move both character and enemy  
+	- Give ability to move both character and enemy [completed]
+	- Generate obstacles [completed]
 2. Have turns for character and enemy
 3. Add logic to enemy
 4. Add Combat actions to Character and Enemy

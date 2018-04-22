@@ -8,7 +8,15 @@ int size = 75;
 
 //int party_size = ; //start with 1 for now
 
+//Features of the map; in the future these will all be in the same object
+
+//int creature_num = 2;
+//CircleShape f[creature_num];
 CircleShape f[2]; //figures for character and enemy
+
+//int obstacle_num = 7;
+//CircleShape obstacles[obstacle_num];
+RectangleShape obstacles[7]; // store obstacle rectangles and their position
 
 int board[10][10] = // generic 10x10 zone with 1 as obstacles
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -22,23 +30,23 @@ int board[10][10] = // generic 10x10 zone with 1 as obstacles
 	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-void countMap(int board[][]) {
-	int obstacle_num=0;
-	int enemy_count=0;
-	int party_size=0;
-	for(int i=0;i<10;i++)
-		for(int j=0;j<10;j++) {
-			int n = board[i][j];
-			obstacle_num += n==1?1:0;
-			enemy_count += n<0?1:0;
-			party_size += n>=2?1:0;
-		}
-	return party_size,obstacle_num,enemy_count 
-}
+// void countMap(int board[10][10], int& party_size, int& obstacle_num, int& enemy_count) {
+// 	//Want to get all information from the map, after the first pass through
+// 	//Since C++ can't pass multiple variables as return parameters (at least before
+// 	// C++11), the values we need must be passed by reference as with pointers
 
-
-
-RectangleShape obstacles[obstacle_num];
+// 	// int obstacle_num=0;
+// 	// int enemy_count=0;
+// 	// int party_size=0;
+// 	for(int i=0;i<10;i++)
+// 		for(int j=0;j<10;j++) {
+// 			int n = board[i][j];
+// 			obstacle_num += n==1?1:0;
+// 			enemy_count += n<0?1:0;
+// 			party_size += n>=2?1:0;
+// 		}
+// 	//return party_size,obstacle_num,enemy_count 
+// }
 
 
 CircleShape createCharacterIcon(int red,int green,int blue) {
@@ -56,6 +64,7 @@ RectangleShape createObstacle() {
 
 void startingPosition() {
 	int k=0;
+	int ob=0;
   	for(int i=0;i<10;i++)
 	    for(int j=0;j<10;j++) {
 		int n = board[i][j];
@@ -69,8 +78,10 @@ void startingPosition() {
 		}
 		if (n==1) {
 			//generate obstacle
-			RectangleShape block = createObstacle();
-			block.setPosition(size*j+2,size*i+2);
+			obstacles[ob].setSize(Vector2f(75,75));
+			obstacles[ob].setFillColor(Color(0,0,0));
+			obstacles[ob].setPosition(size*j+2,size*i+2);
+			ob++;
 		}
 		if (n<0) {
 			//place enemy
@@ -132,6 +143,8 @@ void move(std::string str) {
 int main() {
 	RenderWindow window(VideoMode(751,751), "Fantasy Fighter!");
 
+
+
 	Texture grid; //import character+color?
 	grid.loadFromFile("images/grid3.png");
 
@@ -142,6 +155,15 @@ int main() {
 	//f[1].setFillColor(Color(229,142,29));	
 
 	//loadPosition //place Correct circles and obstacle squares
+
+	// int party_size, int obstacle_num, int enemy_count
+	// int* ps = &party_size;
+	// int* obn = &obstacle_num;
+	// int* ec = &enemy_count; 
+	// countMap(board,*ps,*obn,*ec);
+
+	// RectangleShape obstacles[obstacle_num-1];
+	// Vector2f noGoes[obstacles_num-1];
 
 	startingPosition();
 
@@ -184,7 +206,8 @@ int main() {
 		//Create the screen
 		window.clear();
 		window.draw(sBoard);
-		for(int i=0;i<32;i++) window.draw(f[i]);
+		for(int i=0;i<2;i++) window.draw(f[i]);
+		for(int i=0;i<7;i++) window.draw(obstacles[i]);
 		//window.draw(f[0]);
 		//window.draw(f[1]);
 		window.display();
