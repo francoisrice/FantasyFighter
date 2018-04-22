@@ -4,7 +4,7 @@
 #include <iostream> //cout (for debugging)
 using namespace sf;
 
-int size = 75;
+int size = 75; // the pixel size of each square
 
 //int party_size = ; //start with 1 for now
 
@@ -115,29 +115,32 @@ void loadCharacterIcon() {
 	//return 0;
 }
 
-std::string toChessNote(Vector2f p) {
-	std::string s = "";
-	s += char(p.x/size);
-	s += char(p.y/size);
+int vect2Coord(Vector2f p, Vector2f q) {
+	int s[4];
+	s[0] = p.x-2/size;
+	s[1] = p.y-2/size;
+	s[2] = q.x-2/size;
+	s[3] = q.y-2/size;
 	return s;
 }
 
-Vector2f toCoord(char a,char b) {
-	//int x = int(a) - 97;
-	//int y = 7-int(b)+49;
-	
-	return Vector2f(a*size,b*size);
+std::string position="";
+
+int s[4];
+
+Vector2f coord2Vect(int a,int b) {
+	return Vector2f(a*size+2,b*size+2);
 }
 
-void move(std::string str) {
-	Vector2f oldPos = toCoord(str[0],str[1]);
-	Vector2f newPos = toCoord(str[2],str[3]);
+void move(int arr[4]) {
+	Vector2f oldPos = coord2Vect(arr[0],arr[1]);
+	Vector2f newPos = coord2Vect(arr[2],arr[3]);
 
 	//for(int i=0;i<32;i++)
-	//if ( f[i].getPosition()==newPos) f[i].setPosition(-100,-100);
+	//if ( f[i].getPosition()==newPos) f[i].setPosition(-100,-100); // capturing chess pieces
 	
 	//for(int i=0;i<32;i++)
-	//if (f[i].getPosition()==oldPos) f[i].setPosition(newPos);
+	//if (f[i].getPosition()==oldPos) f[i].setPosition(newPos); // For when erasing moves
 }
 
 int main() {
@@ -175,45 +178,92 @@ int main() {
 
 	//Sprite s(t1);
 	Sprite sBoard(grid);
+	//while (e.key.code!=Keyboard::C || ){
+		while (window.isOpen()) {
+			Vector2i pos = Mouse::getPosition(window);
 
-	while (window.isOpen()) {
-		Vector2i pos = Mouse::getPosition(window);
+			Event e;
 
-		Event e;
-		
-		while (window.pollEvent(e)) {
-			if (e.type == Event::Closed)
-				window.close();
+			//For multiple characters
+			//  for(z=0;z<1;z++){
+			//  int z = rand(initiative_list)[k] // psuedocode
+			// int z = 0;
+			// while(newPos==startPos){
+			// for(int z=0;z<1;z++){
+			// 	if (yourTurn){
+			// 		z=1;
+			// 	} else {
+			// 		z=0;
+			// 	}
+			while (window.pollEvent(e)) {
+				if (e.type == Event::Closed)
+					window.close();
 
-			if (e.type == Event::MouseButtonPressed)
-				if (e.key.code == Mouse::Left)
-					for(int i=0;i<2;i++)
-					if (f[i].getGlobalBounds().contains(pos.x,pos.y)){
-						isMove = true; n=i;
-						dx=pos.x -f[i].getPosition().x;
-						dy=pos.y -f[i].getPosition().y;
+				if (e.type == Event::MouseButtonPressed)
+					if (e.key.code == Mouse::Left)
+						//for(int i=0;i<2;i++){
+							if (f[1].getGlobalBounds().contains(pos.x,pos.y)){
+								isMove = true; //n=z;
+								dx=pos.x -f[1].getPosition().x;
+								dy=pos.y -f[1].getPosition().y;
+								oldPos = f[1].getPosition();
+							}
+						//}
+				if (e.type == Event::MouseButtonReleased)
+					if (e.key.code == Mouse::Left){
+						isMove=false;
+						Vector2f p = f[1].getPosition() + Vector2f(37,37); //Vector2f(size/2,size/2);
+						newPos = Vector2f(75*int(p.x/75)+2, 75*int(p.y/75)+2);
+						s[0] = oldPos.x-2/size;
+						s[1] = oldPos.y-2/size;
+						s[2] = newPos.x-2/size;
+						s[3] = newPos.y-2/size;
+						move(s);
+						f[1].setPosition(newPos);
 					}
-			if (e.type == Event::MouseButtonReleased)
-				if (e.key.code == Mouse::Left){
-					isMove=false;
-					Vector2f p = f[n].getPosition() + Vector2f(37,37); //Vector2f(size/2,size/2);
-					Vector2f newPos = Vector2f(75*int(p.x/75)+2, 75*int(p.y/75)+2);
-					f[n].setPosition(newPos);
+			}
+
+			// Perform enemy actions (and ally actions)
+			if (Keyboard::isKeyPressed(Keyboard::Space)){
+				s = "1214";
+				s[0] = oldPos.x-2/size; // This is the only problem...
+				s[1] = oldPos.y-2/size; //   any one move takes an entire array[4]
+				s[2] = newPos.x-2/size;
+				s[3] = newPos.y-2/size;
+				oldPos = Vector2f(size*str[0]+2, size*str[1]+2);
+				newPos = Vector2f(size*str[2]+2, size*str[3]+2);
+
+				for(int i=0;i<2;i++) if (f[0].getPosition()==oldPos) n=i;
+
+				// animation
+				for(int k=0;k<25;k++){
+					Vector2f p = newPos - oldPos;
+					f[n].move(p.x/25, p.y/25);
+					window.draw(sBoard);
+					for(int i=0;i<2;i++) window.draw(f[i]); 
+					window.draw(f[n]);
+					for(int i=0;i<7;i++) window.draw(obstacles[i]);
+					window.display();
 				}
-		}
+			}
 
-		if (isMove) f[n].setPosition(pos.x-dx,pos.y-dy);
+			if (isMove) f[1].setPosition(pos.x-dx,pos.y-dy);
 
-		//Create the screen
-		window.clear();
-		window.draw(sBoard);
-		for(int i=0;i<2;i++) window.draw(f[i]);
-		for(int i=0;i<7;i++) window.draw(obstacles[i]);
-		//window.draw(f[0]);
-		//window.draw(f[1]);
-		window.display();
+			
+			
 
-	}
+
+			// Perform ally actions, or set for ally to take user input
+
+			//Create the screen
+			window.clear();
+			window.draw(sBoard);
+			for(int i=0;i<2;i++) window.draw(f[i]);
+			for(int i=0;i<7;i++) window.draw(obstacles[i]);
+			window.display();
+			}
+		//}
+	//}
 
 	return 0;
 

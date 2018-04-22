@@ -24,7 +24,6 @@ The game hasn't yet been tested when not compiled from source.
 5. Tie Character and enemy to profiles for increasing experience and health
 6. Add screen/portal to gain additional powers
 7. ...
- - Add obstacles
 
 # Combat Mechanics
 Two levels of space: Air and Ground
