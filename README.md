@@ -20,9 +20,9 @@ The game hasn't yet been tested when not compiled from source.
 	- Generate obstacles [completed]
 	- Add collision for obstacles 
 2. Have turns for character and enemy [completed]
-3. Add logic to enemy 
-4. Add Combat actions to Character and Enemy
-5. Tie Character and enemy to profiles for increasing experience and health
+3. Add logic to enemy [completed]
+4. Add Combat actions to Character and Enemy [in progress]
+5. Tie Character and enemy to profiles [in progress]
 6. Add screen/portal to gain additional powers
 7. ...
 

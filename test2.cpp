@@ -4,20 +4,23 @@
 #include <iostream> //cout (for debugging)
 using namespace sf;
 
-int size = 75; // the pixel size of each square
+///////////////////   Elements for world generation     ///////////////////////////////////
 
-//int party_size = ; //start with 1 for now
+int size = 75; // the pixel size of each square; in future make resizable for zooming in & out
 
 //Features of the map; in the future these will all be in the same object
+// class Map {
+// 	int board[10][10];
+// 	int obstacle_num;
+//	int creature_num; // party_size+enemy_num
+// 	int party_max;
+// 	int enemy_max;
+// }
 
-//int creature_num = 2;
 //CircleShape f[creature_num];
+
 CircleShape f[2]; //figures for character and enemy
-
-//int obstacle_num = 7;
-//CircleShape obstacles[obstacle_num];
 RectangleShape obstacles[7]; // store obstacle rectangles and their position
-
 int board[10][10] = // generic 10x10 zone with 1 as obstacles
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -29,38 +32,6 @@ int board[10][10] = // generic 10x10 zone with 1 as obstacles
 	  0, 0, 0, 0, 0, 0, 0, 0, 0, 2,
 	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	  0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-// void countMap(int board[10][10], int& party_size, int& obstacle_num, int& enemy_count) {
-// 	//Want to get all information from the map, after the first pass through
-// 	//Since C++ can't pass multiple variables as return parameters (at least before
-// 	// C++11), the values we need must be passed by reference as with pointers
-
-// 	// int obstacle_num=0;
-// 	// int enemy_count=0;
-// 	// int party_size=0;
-// 	for(int i=0;i<10;i++)
-// 		for(int j=0;j<10;j++) {
-// 			int n = board[i][j];
-// 			obstacle_num += n==1?1:0;
-// 			enemy_count += n<0?1:0;
-// 			party_size += n>=2?1:0;
-// 		}
-// 	//return party_size,obstacle_num,enemy_count 
-// }
-
-
-CircleShape createCharacterIcon(int red,int green,int blue) {
-	CircleShape shape(36);
-	shape.setFillColor(Color(0,100,255));
-	//shape.setFillColor(Color(red,green,blue)); // when creating shapes from character profiles
-	return shape;
-}
-
-RectangleShape createObstacle() {
-	RectangleShape rectangle(Vector2f(75,75));
-	rectangle.setFillColor(Color(0,0,0));
-	return rectangle;
-}
 
 void startingPosition() {
 	int k=0;
@@ -93,27 +64,47 @@ void startingPosition() {
 	}
 }
 
-// void loadPosition() { 
-// //Use this to load obstacles and players
-//   int k=0;
-//   for(int i=0;i<10;i++)
-//     for(int j=0;j<10;j++) {
-// 	int n = board[i][j];
-// 	if (!n) continue;
-// 	int x = abs(n)-1;
-// 	int y = n>0?1:0;
-// 	f[k].setTextureRect( IntRect(size*x,size*y,size,size) );
-// 	f[k].setPosition(size*j,size*i);
-// 	k++;
-// 	}
+////////////////////////      Elements for Combat Mechanics     //////////////////////////////////// 
+// in future, these values will be pulled from character header files
 
-// 	for(int i=0;i<position.length();i+=5)
-// 	  move(position.substr(i,4));
-// }
+float character_HP = 10;
+float character_maxHP = 10;
+float enemy_HP = 10;
+float enemy_maxHP = 10;
+bool character_stun = 0;
+bool enemy_stun = 0;
 
-void loadCharacterIcon() {
-	//return 0;
+void lightAttack(bool blockState, bool airState, float victim) {
+	// check distance - would be good before end of LD, but not necessary
+	//check block
+	if(blockState) continue;
+
+	//check jump
+	int dmg = 1;
+	victim -= dmg;
 }
+
+void heavyAttack(bool blockState, bool airState, bool stunState, float victim) {
+	// check distance - would be good before end of LD, but not necessary
+	//check block
+	if(blockState){
+
+	} continue;
+	//check jump	
+	float dmg = 2.5;
+	victim -= dmg;
+
+}
+
+void smashAttack(bool blockState, bool airState, float victim) {
+	// check distance - would be good before end of LD, but not necessary
+	//check block
+	//check jump	
+	int dmg = 5;
+	victim -= dmg;	
+}
+
+////////////////////////      Utility elements for the game to run     //////////////////////////////
 
 // int vect2Coord(Vector2f p, Vector2f q) {
 // 	//int s[4];
@@ -124,9 +115,7 @@ void loadCharacterIcon() {
 // 	return s;
 // }
 
-std::string position="";
-
-int s[4];
+int s[4]; // hold the old and new, x and y coordinates for motion
 
 Vector2f coord2Vect(int a,int b) {
 	return Vector2f(a*size+2,b*size+2);
@@ -135,12 +124,97 @@ Vector2f coord2Vect(int a,int b) {
 void move(int arr[4]) {
 	Vector2f oldPos = coord2Vect(arr[0],arr[1]);
 	Vector2f newPos = coord2Vect(arr[2],arr[3]);
+}
 
-	//for(int i=0;i<32;i++)
-	//if ( f[i].getPosition()==newPos) f[i].setPosition(-100,-100); // capturing chess pieces
+void getNextMove(Vector2f currLocat,Vector2f target) {
+	//take position of the character - input arg
+
+	// Since we have the current position, set that as oldPos
+	s[0] = currLocat.x-2/size;
+	s[1] = currLocat.y-2/size;
+
+	int dx = target.x-currLocat.x; // these get used often
+	int dy = target.y-currLocat.y;
+	int dxdy = abs(dx)-abs(dy);
+
+	//  if close -> use light attack continously
+	if (abs(dx)>75 || abs(dy)>75){
+		//move toward the target; should you move vertically or horizontally?
+		// Are there any gaps here? Anything I'm missing
+		if (dxdy<-150){
+			// move in the y
+			s[2] = s[0];
+			int m = dy>0?1:-1;
+			s[3] = s[1]+n*2;
+
+		} else if (dxdy>150) {
+			// move in the x
+			int m = dx>0?1:-1;
+			s[2] = s[0]+n*2;
+			s[3] = s[1];
+
+		} else if (dxdy>-150 && dxdy<150) { // case of -150<abs(dx)-abs(dy)<150; dx =225, dy = 150
+			// move diagonally
+			int m = dx>0?1:-1;
+			int n = dy>0?1:-1;
+			s[2] = s[0]+m*1;
+			s[3] = s[1]+n*1;
+
+		} else if (abs(dx)==150 && dy==0) { // Case of 150 and 0
+			// move 1, then attack; which direction? make the 150 into 75
+			int m = dx>0?1:-1;
+			s[2] = s[0]+m*1;
+			s[3] = s[1];
+
+			//then attack
+			lightAttack(character_HP);
+
+		} else if (abs(dy)==150 && dx==0) { // other half of the above
+			int m = dy>0?1:-1;
+			s[2] = s[0];
+			s[3] = s[1]+m*1;
+
+			//then attack
+			lightAttack(character_HP);
+
+		} else if (abs(dy)==150 && dx==75) { // Case of 150 and 75
+			// move 2, then attack; make the 150 into 0
+			int m = dy>0?1:-1;
+			s[2] = s[0];
+			s[3] = s[1]+m*2;
+
+			//then attack
+			lightAttack(character_HP);
+
+		} else if (abs(dx)==150 && dy==75) { // other half of the above
+			int m = dx>0?1:-1;
+			s[2] = s[0]+m*2;
+			s[3] = s[1];
+
+			//then attack
+			lightAttack(character_HP);
+		}
+
+
+	} 
+	if (abs(dx)==75 && abs(dy)==75){ // if diagonally from target
+		// move and attack
+		bool m = rand() % 2;
+		bool n = !m;
+		s[2] = s[0]+m*1;
+		s[3] = s[1]+n*1;
+
+		//then attack
+		lightAttack(character_HP);
+
+	}
+	if () { // case of 75 and 0 
+		// attack
+		lightAttack(character_HP);
+	}
 	
-	//for(int i=0;i<32;i++)
-	//if (f[i].getPosition()==oldPos) f[i].setPosition(newPos); // For when erasing moves
+
+
 }
 
 int main() {
@@ -148,25 +222,8 @@ int main() {
 
 
 
-	Texture grid; //import character+color?
+	Texture grid;
 	grid.loadFromFile("images/grid3.png");
-
-	//CircleShape f[0](36);
-	//f[0].setFillColor(Color(0,170,200));
-
-	//CircleShape f[1](36);
-	//f[1].setFillColor(Color(229,142,29));	
-
-	//loadPosition //place Correct circles and obstacle squares
-
-	// int party_size, int obstacle_num, int enemy_count
-	// int* ps = &party_size;
-	// int* obn = &obstacle_num;
-	// int* ec = &enemy_count; 
-	// countMap(board,*ps,*obn,*ec);
-
-	// RectangleShape obstacles[obstacle_num-1];
-	// Vector2f noGoes[obstacles_num-1];
 
 	startingPosition();
 
@@ -195,13 +252,16 @@ int main() {
 			// 	} else {
 			// 		z=0;
 			// 	}
+
+			// Also change 1's to i's and run for each party member
+
 			while (window.pollEvent(e)) {
 				if (e.type == Event::Closed)
 					window.close();
 
 				if (e.type == Event::MouseButtonPressed)
 					if (e.key.code == Mouse::Left)
-						//for(int i=0;i<2;i++){
+						//for(int i=0;i<party_size;i++){ // must only have party members in f[]
 							if (f[1].getGlobalBounds().contains(pos.x,pos.y)){
 								isMove = true; //n=z;
 								dx=pos.x -f[1].getPosition().x;
@@ -223,12 +283,15 @@ int main() {
 					}
 			}
 
-			// Perform enemy actions (and ally actions)
+			// Perform enemy actions (and ally actions, if AI controlled)
 			if (Keyboard::isKeyPressed(Keyboard::Space)){
 				s[0] = 1; // This is the only problem...
 				s[1] = 2; //   any one move takes an entire array[4]
 				s[2] = 1;
 				s[3] = 4;
+
+				//getNextMove();
+
 				oldPos = Vector2f(size*s[0]+2, size*s[1]+2);
 				newPos = Vector2f(size*s[2]+2, size*s[3]+2);
 
@@ -241,7 +304,7 @@ int main() {
 					window.draw(sBoard);
 					for(int i=0;i<2;i++) window.draw(f[i]); 
 					window.draw(f[n]);
-					for(int i=0;i<7;i++) window.draw(obstacles[i]);
+					//for(int i=0;i<7;i++) window.draw(obstacles[i]);
 					window.display();
 				}
 
@@ -261,7 +324,7 @@ int main() {
 			window.clear();
 			window.draw(sBoard);
 			for(int i=0;i<2;i++) window.draw(f[i]);
-			for(int i=0;i<7;i++) window.draw(obstacles[i]);
+			//for(int i=0;i<7;i++) window.draw(obstacles[i]);
 			window.display();
 			}
 		//}
