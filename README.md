@@ -26,6 +26,9 @@ The game hasn't yet been tested when not compiled from source.
 6. Add screen/portal to gain additional powers
 7. ...
 
+Note: Light attacks have been added but are untested. Other attacks are created, 
+	but not coded to pressed keys.
+
 # Combat Mechanics
 Two levels of space: Air and Ground
 You can ground light, air light, ground heavy, air heavy, ground smash, or air smash
@@ -35,9 +38,9 @@ Blocks block all heights of attack; but do not affect heavy attacks
 Speed of actions: 
 - Light - hits instantly, 40% damage
 - Heavy - 1 turn to charge, then hits on following turn, 100% damage
-- Smash - 2 turns to charge, then hits on following turn, negates motion, 200% damage
+- Smash - 2 turns to charge, then hits on following turn, negates jumping and moving, 200% damage
 - Jump - in the air that turn, and enemy's turn
-- Block - Starts that turn and continues for the next turn, negates motion
+- Block - Starts that turn and continues for the next turn, negates jumping and moving
 
 Blocking a light attack or heavy attack cancels the attack
 Heavy attacks that are blocked cause the next turn to be spent stunned

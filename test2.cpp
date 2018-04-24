@@ -67,40 +67,148 @@ void startingPosition() {
 ////////////////////////      Elements for Combat Mechanics     //////////////////////////////////// 
 // in future, these values will be pulled from character header files
 
-float character_HP = 10;
-float character_maxHP = 10;
-float enemy_HP = 10;
-float enemy_maxHP = 10;
-bool character_stun = 0;
-bool enemy_stun = 0;
+class Creature() { // inherit graphical shape?
+public:
+	float hp;
+	float maxHP; // standard max hp should be 20 hp, for the set damage
+	bool stunned;
+	bool blocking;
+	bool inAir;
+	bool canAttack;
+	bool canJump;
+	bool canMove;
+	int actionCounter;
+	int turnCounter;
+	int party_num;
+	Creature(){};
+	Creature(float h,float H,bool s,bool b,bool a){
+		hp=h;
+		maxHP=H;
+		stunned=s;
+		blocking=b;
+		inAir=a;
+	}
+	~Creature(){};
+	
+};
 
-void lightAttack(bool blockState, bool airState, float victim) {
+// class Character {
+// 	float hp;
+// 	float maxHP;
+// 	bool stunned = 0;
+// 	bool blocking = 0;
+// 	bool inAir = 0;
+// public:
+// 	Character();
+// 	~Character();
+	
+// };
+
+// class Enemy {
+// 	float hp;
+// 	float maxHP;
+// 	bool stunned = 0;
+// 	bool blocking = 0;
+// 	bool inAir = 0;
+// public:
+// 	Enemy();
+// 	~Enemy();
+	
+// };
+
+// float character_HP = 10;
+// float character_maxHP = 10;
+// float enemy_HP = 10;
+// float enemy_maxHP = 10;
+// bool character_stun = 0;
+// bool enemy_stun = 0;
+
+void lightAerialAttack(Creature target, Creature attacker){//bool blockState, bool airState, float victim) {
 	// check distance - would be good before end of LD, but not necessary
+	
 	//check block
-	if(blockState) continue;
+	if(target.blocking) continue;
 
 	//check jump
-	int dmg = 1;
-	victim -= dmg;
+	if(!target.inAir) continue;
+
+	int dmg = 2;
+	target -= dmg;
 }
 
-void heavyAttack(bool blockState, bool airState, bool stunState, float victim) {
+void heavyAerialAttack(Creature attacker, Creature target) {
 	// check distance - would be good before end of LD, but not necessary
+	if (actionCounter==1){
+		//check block
+		if(target.blocking){
+			attacker.stunned = 1;
+		} continue;
+		
+		//check jump
+		if(!target.inAir) continue;
+
+		float dmg = 5;
+		victim -= dmg;
+		attacker.actionCounter = 0;	
+	} else {
+		turnCounter = 2; // do nothing while counter > 0; tick down when Keyboard::isKeyPressed(Keyboard::Space);
+	}
+}
+
+void smashAerialAttack(Creature attacker, Creature target) {
+	// check distance - would be good before end of LD, but not necessary
+	
+	// smash attacks go through blocks 
+	if (attacker.actionCounter==2){
+		//check jump
+		if(!target.inAir) continue;
+
+		int dmg = 10;
+		victim -= dmg;
+		attacker.actionCounter = 0;
+	} else {
+		attacker.turnCounter = 2;
+	}
+}
+
+void lightGroundAttack(Creature attacker, Creature target){//bool blockState, bool airState, float victim) {
+	// check distance - would be good before end of LD, but not necessary
+	
+	//check block
+	if(target.blocking) continue;
+
+	//check jump
+	if(target.inAir) continue;
+
+	int dmg = 2;
+	target -= dmg;
+}
+
+void heavyGroundAttack(Creature attacker, Creature target) {
+	// check distance - would be good before end of LD, but not necessary
+	
 	//check block
 	if(blockState){
-
+		// stunn
 	} continue;
-	//check jump	
-	float dmg = 2.5;
+	
+	//check jump
+	if(!target.inAir) continue;
+
+	float dmg = 5;
 	victim -= dmg;
 
 }
 
-void smashAttack(bool blockState, bool airState, float victim) {
+void smashGroundAttack(Creature attacker, Creature target) {
 	// check distance - would be good before end of LD, but not necessary
-	//check block
-	//check jump	
-	int dmg = 5;
+	
+	// smash attacks go through blocks 
+
+	//check jump
+	if(!target.inAir) continue;
+	
+	int dmg = 10;
 	victim -= dmg;	
 }
 
@@ -126,20 +234,20 @@ void move(int arr[4]) {
 	Vector2f newPos = coord2Vect(arr[2],arr[3]);
 }
 
-void getNextMove(Vector2f currLocat,Vector2f target) {
+void getNextMove(Vector2f currLocat, Vector2f victim, Creature attacker, Creature target) {
 	//take position of the character - input arg
 
 	// Since we have the current position, set that as oldPos
 	s[0] = currLocat.x-2/size;
 	s[1] = currLocat.y-2/size;
 
-	int dx = target.x-currLocat.x; // these get used often
-	int dy = target.y-currLocat.y;
+	int dx = victim.x-currLocat.x; // these get used often
+	int dy = victim.y-currLocat.y;
 	int dxdy = abs(dx)-abs(dy);
 
 	//  if close -> use light attack continously
 	if (abs(dx)>75 || abs(dy)>75){
-		//move toward the target; should you move vertically or horizontally?
+		//move toward the victim; should you move vertically or horizontally?
 		// Are there any gaps here? Anything I'm missing
 		if (dxdy<-150){
 			// move in the y
@@ -197,7 +305,7 @@ void getNextMove(Vector2f currLocat,Vector2f target) {
 
 
 	} 
-	if (abs(dx)==75 && abs(dy)==75){ // if diagonally from target
+	if (abs(dx)==75 && abs(dy)==75){ // if diagonally from victim
 		// move and attack
 		bool m = rand() % 2;
 		bool n = !m;
@@ -226,6 +334,9 @@ int main() {
 	grid.loadFromFile("images/grid3.png");
 
 	startingPosition();
+
+	Creature character = Creature(20,20,0,0,0);
+	Creature enemy = Creature(20,20,0,0,0);
 
 	bool isMove=false;
 	float dx=0, dy=0;
@@ -282,6 +393,22 @@ int main() {
 						f[1].setPosition(newPos);
 					}
 			}
+
+			if (Keyboard::isKeyPressed(Keyboard::A)){
+				if (character.canAttack){
+					lightGroundAttack();
+					character.canAttack = 0;
+				}
+
+			}
+
+			if (Keyboard::isKeyPressed(Keyboard::Q)){
+				if (character.canAttack){
+					lightAerialAttack();
+					character.canAttack = 0;
+				}
+			}
+
 
 			// Perform enemy actions (and ally actions, if AI controlled)
 			if (Keyboard::isKeyPressed(Keyboard::Space)){
